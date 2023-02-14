@@ -46,5 +46,8 @@ public class Visitor {
 	
 	@Column(name ="visiting_date")
 	private String visitingDate;
+	
+	@Column(name="image_name")
+	private String imageName;
 
 }

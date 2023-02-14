@@ -1,9 +1,11 @@
 package com.visitor.management.system.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,13 +18,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.visitor.management.system.entities.Visitor;
 import com.visitor.management.system.payloads.ApiResponse;
 import com.visitor.management.system.payloads.VisitorDto;
 import com.visitor.management.system.payloads.VisitorResponse;
+import com.visitor.management.system.services.FileService;
 import com.visitor.management.system.services.VisitorService;
 
+import jakarta.persistence.criteria.Path;
 import jakarta.validation.Valid;
 
 
@@ -34,6 +39,24 @@ public class VisitorController {
 	
 	@Autowired
 	private VisitorService visitorService;
+	
+	@Autowired
+	private FileService fileService;
+	
+	@Value("${Project.image}")
+	private String path;
+	
+	//post Image uploading 
+	@PostMapping("/image/{id}")
+	public ResponseEntity<VisitorDto> uploadPostImage(@RequestParam("image") MultipartFile image ,
+			@PathVariable Long id) throws IOException{
+		
+		VisitorDto visitorDto = this.visitorService.getVisitorById(id);
+		String fileName = this.fileService.uploadImage(path, image);
+		visitorDto.setImageName(fileName);
+		VisitorDto updateVisitor = this.visitorService.updateVisitor(visitorDto, id);
+		return new ResponseEntity<VisitorDto>(updateVisitor , HttpStatus.OK);
+	}
 	
 	//Post - create Visitor
     @PostMapping("/")

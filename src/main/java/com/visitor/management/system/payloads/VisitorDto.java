@@ -42,5 +42,7 @@ public class VisitorDto {
 	
 	@NotNull
 	private String visitingDate;
+	
+	private String ImageName;
 
 }
